@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Bolt Texturas">
+  <meta property="og:description" content="O maior criador de texturas...">
+  <title>Calculadora de Estrelas</title>
+  <link rel="icon" href="img/icon.png">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #181818;
+      color: #ffffff;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+    h1 {
+      text-align: center;
+      color: #ffffff;
+    }
+    label {
+      margin: 10px 0 5px;
+      display: block;
+      color: #dddddd;
+    }
+    select, input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background-color: #222;
+      color: #ffffff;
+    }
+      input[type="number"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background-color: #222;
+      color: #ffffff;
+}
+    select:hover {
+      background-color: #303030;
+      color: #ffffff;
+    }
+    button {
+      padding: 10px;
+      width: 100%;
+      background-color: #6e28a7;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #512188;
+    }
+    .resultado {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      text-align: center;
+    }
+    .destaque {
+      background-color: #222;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 15px;
+      text-align: center;
+      font-weight: bold;
+      color: #ead8fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .container-estrelas {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .estrela {
+      font-size: 30px;
+      cursor: pointer;
+      color: #555;
+      transition: color 0.3s;
+    }
+    .estrela.selecionada {
+      color: rgb(255, 208, 0);
+    }
+    .estrela-icone {
+      color: rgb(255, 208, 0);
+      font-size: 25px;
+      margin-left: 8px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Calculadora de <span style="color: #6e28a7;">XP</span></h1>
+
+<label for="tipoCategoria">Selecionar Categoria:</label>
+<select id="tipoCategoria" onchange="atualizarCategoria()">
+  <option value="Arma">Arma</option>
+  <option value="Armadura">Armadura</option>
+</select>
+
+<label for="tipoItem">Selecionar Tipo:</label>
+<select id="tipoItem" onchange="atualizarEstrelas()">
+  <option value="Comum">Comum</option>
+  <option value="Raro">Raro</option>
+  <option value="Epico">Épico</option>
+  <option value="Lendario">Lendário</option>
+</select>
+
+<label for="estrelaAtual">Nível de Estrela atual:</label>
+<div id="selecaoEstrelas" class="container-estrelas"></div>
+
+<label for="estrelaDesejada">Nível de Estrela desejado:</label>
+<select id="estrelaDesejada"></select>
+
+<label for="xpAtual">Xp Atual:</label>
+<input type="number" id="xpAtual" placeholder="Insira o xp atual" />
+
+<button onclick="calcularXP()">Calcular Xp</button>
+
+<div class="resultado" id="resultado"></div>
+<div class="destaque" id="xpTotal"></div>
+
+<script>
+  let estrelaSelecionada = 1;
+
+  function criarEstrelas(maxEstrelas) {
+    const container = document.getElementById('selecaoEstrelas');
+    container.innerHTML = '';
+    for (let i = 1; i <= maxEstrelas; i++) {
+      const estrela = document.createElement('span');
+      estrela.classList.add('estrela');
+      estrela.setAttribute('data-estrela', i);
+      estrela.innerHTML = '&#9733;';
+
+      if (i === 1) {
+        estrela.classList.add('selecionada');
+      }
+
+      estrela.addEventListener('click', () => {
+        if (i === 1) {
+          estrelaSelecionada = 1;
+        } else {
+          estrelaSelecionada = (estrelaSelecionada === i) ? i - 1 : i;
+        }
+        atualizarSelecaoEstrelas(maxEstrelas);
+      });
+      container.appendChild(estrela);
+    }
+  }
+
+  function atualizarSelecaoEstrelas(maxEstrelas) {
+    document.querySelectorAll('.estrela').forEach(e => {
+      const valor = parseInt(e.getAttribute('data-estrela'));
+      e.classList.toggle('selecionada', valor <= estrelaSelecionada);
+    });
+  }
+
+  function atualizarCategoria() {
+    document.getElementById("tipoItem").value = "Comum";
+    atualizarEstrelas();
+  }
+
+  function atualizarEstrelas() {
+    const tipoItem = document.getElementById("tipoItem").value;
+    let maxEstrelas;
+    switch (tipoItem) {
+      case "Comum":
+        maxEstrelas = 3;
+        break;
+      case "Raro":
+        maxEstrelas = 4;
+        break;
+      case "Epico":
+        maxEstrelas = 5;
+        break;
+      case "Lendario":
+        maxEstrelas = 6;
+        break;
+      default:
+        maxEstrelas = 5;
+    }
+
+    criarEstrelas(maxEstrelas);
+    estrelaSelecionada = 1;
+    atualizarSelecaoEstrelas(maxEstrelas);
+
+    const selectEstrelaDesejada = document.getElementById("estrelaDesejada");
+    selectEstrelaDesejada.innerHTML = '';
+
+    for (let i = 2; i <= maxEstrelas; i++) {
+      const opcao = document.createElement('option');
+      opcao.value = i;
+      opcao.text = `${i} Estrela${i > 1 ? 's' : ''}`;
+      selectEstrelaDesejada.appendChild(opcao);
+    }
+  }
+
+  function calcularXP() {
+    const tipoItem = document.getElementById("tipoItem").value;
+    const tipoCategoria = document.getElementById("tipoCategoria").value;
+    const xpAtual = parseInt(document.getElementById("xpAtual").value) || 0;
+    const estrelaDesejada = parseInt(document.getElementById("estrelaDesejada").value);
+    let requisitosXP = [];
+
+    if (tipoCategoria === "Arma") {
+      switch (tipoItem) {
+        case "Comum":
+          requisitosXP = [0, 80, 160];
+          break;
+        case "Raro":
+          requisitosXP = [0, 120, 240, 360];
+          break;
+        case "Epico":
+          requisitosXP = [0, 450, 900, 1350, 2250];
+          break;
+        case "Lendario":
+          requisitosXP = [0, 1600, 4000, 6000, 8000, 10000];
+          break;
+      }
+    } else {
+      switch (tipoItem) {
+        case "Comum":
+          requisitosXP = [0, 20, 40];
+          break;
+        case "Raro":
+          requisitosXP = [0, 30, 60, 90];
+          break;
+        case "Epico":
+          requisitosXP = [0, 100, 200, 300, 500];
+          break;
+        case "Lendario":
+          requisitosXP = [0, 400, 1000, 1500, 2000, 2500];
+          break;
+      }
+    }
+    let xpNecessario = requisitosXP.slice(estrelaSelecionada, estrelaDesejada)
+                                   .reduce((acumulado, valor) => acumulado + valor, 0);
+    let xpRestante = Math.max(0, xpNecessario - xpAtual);
+
+    document.getElementById("resultado").innerText =
+      `Necessário para alcançar ${estrelaDesejada} Estrelas: ${xpRestante}`;
+    document.getElementById("xpTotal").innerHTML =
+      `TOTAL: ${xpNecessario} <span class='estrela-icone'>&#9733;</span>`;
+  }
+  atualizarCategoria();
+</script>
+
+</body>
+</html>
